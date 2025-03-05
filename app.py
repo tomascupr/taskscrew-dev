@@ -19,14 +19,15 @@ def run_crew():
 
     task = Task(
         description="List the top AI trends for 2025",
-        expected_output="A concise and clear summary of the top 5 AI startup trends anticipated for the year 2025.",
+        expected_output="A concise summary of the top 5 AI startup trends anticipated for the year 2025.",
         agent=agent
     )
 
     crew = Crew(agents=[agent], tasks=[task], verbose=True)
     result = crew.kickoff()
 
-    return jsonify({"result": result})
+    # FIX: Convert CrewOutput to a JSON-friendly format explicitly
+    return jsonify({"result": str(result)})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
