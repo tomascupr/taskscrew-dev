@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
 from crewai import Agent, Task, Crew
-from crewai_tools import PDFLoader
+from crewai_tools.loaders import PDFLoader
 
 app = Flask(__name__)
 
