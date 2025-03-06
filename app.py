@@ -5,47 +5,47 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return jsonify({"status": "CrewAI without PDF knowledge deployed."})
+    return jsonify({"status": "CrewAI deployed successfully."})
 
 @app.route('/run-crew')
 def run_crew():
     brand_manager = Agent(
         role="Brand Manager",
-        goal="Ensure brand consistency according to predefined guidelines.",
-        backstory="Expert brand manager deeply familiar with established brand guidelines.",
+        goal="Provide clear brand guidelines based on predefined standards.",
+        backstory="Expert in brand management.",
         verbose=True
     )
 
     copywriter = Agent(
         role="Copywriter",
-        goal="Write compelling and engaging social media posts about great food.",
-        backstory="Creative and experienced digital copywriter.",
+        goal="Craft engaging social media posts.",
+        backstory="Experienced creative copywriter.",
         verbose=True
     )
 
     mom = Agent(
         role="Mom Expert",
-        goal="Ensure content deeply resonates with moms.",
-        backstory="Experienced mother understanding the nuances of engaging the mom audience.",
+        goal="Ensure the message resonates deeply with moms.",
+        backstory="Insightful mom familiar with audience expectations.",
         verbose=True
     )
 
     brand_task = Task(
-        description="Provide concise brand voice, style, and key messages based on predefined guidelines.",
-        expected_output="Concise guidelines clearly defining brand voice and style.",
+        description="Summarize brand guidelines clearly.",
+        expected_output="Brand voice and style guidelines.",
         agent=brand_manager
     )
 
     copywriting_task = Task(
-        description="Create a social media post promoting great food following brand guidelines provided by the Brand Manager.",
-        expected_output="An engaging, concise, and brand-consistent social media post.",
+        description="Write engaging social media post.",
+        expected_output="Social media post text.",
         agent=copywriter,
         context=[brand_task]
     )
 
     mom_task = Task(
-        description="Review and optimize the social media post to resonate strongly with moms.",
-        expected_output="Final optimized social media post appealing to moms.",
+        description="Optimize social media post to resonate with moms.",
+        expected_output="Optimized social media post.",
         agent=mom,
         context=[copywriting_task]
     )
@@ -53,12 +53,19 @@ def run_crew():
     crew = Crew(
         agents=[brand_manager, copywriter, mom],
         tasks=[brand_task, copywriting_task, mom_task],
+        memory=True,  # enables conversation memory
         verbose=True
     )
 
     result = crew.kickoff()
 
-    return jsonify({"result": str(result)})
+    # Access internal conversation history explicitly
+    conversation_logs = crew.memory.export_memory()
+
+    return jsonify({
+        "result": str(result),
+        "conversation_logs": conversation_logs
+    })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
