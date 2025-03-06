@@ -1,22 +1,18 @@
 from flask import Flask, jsonify
 from crewai import Agent, Task, Crew
-from crewai_tools.loaders import PDFLoader
 
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return jsonify({"status": "CrewAI with Brand Book PDF deployed."})
+    return jsonify({"status": "CrewAI without PDF knowledge deployed."})
 
 @app.route('/run-crew')
 def run_crew():
-    # Load brand book PDF once and share with all agents via crew knowledge
-    brand_book_knowledge = PDFLoader(pdf_path="brand_book.pdf")
-
     brand_manager = Agent(
         role="Brand Manager",
-        goal="Ensure brand consistency according to the brand book PDF.",
-        backstory="Expert brand manager deeply familiar with brand guidelines provided in PDF.",
+        goal="Ensure brand consistency according to predefined guidelines.",
+        backstory="Expert brand manager deeply familiar with established brand guidelines.",
         verbose=True
     )
 
@@ -35,8 +31,8 @@ def run_crew():
     )
 
     brand_task = Task(
-        description="Extract key messaging, brand voice, and style guidelines from the brand book PDF.",
-        expected_output="Concise guidelines extracted from the brand book.",
+        description="Provide concise brand voice, style, and key messages based on predefined guidelines.",
+        expected_output="Concise guidelines clearly defining brand voice and style.",
         agent=brand_manager
     )
 
